@@ -121,12 +121,6 @@ function escapeHtml(text) {
   });
 }
 
-// Register the handler globally so Office.js can find it
-// This is REQUIRED for event-based activation
-if (typeof globalThis !== "undefined") {
-  globalThis.onComposeHandler = onComposeHandler;
-} else if (typeof window !== "undefined") {
-  window.onComposeHandler = onComposeHandler;
-} else if (typeof global !== "undefined") {
-  global.onComposeHandler = onComposeHandler;
-}
+// REQUIRED: Map the manifest event handler name to the JS function.
+// Classic Outlook on Windows requires Office.actions.associate().
+Office.actions.associate("onComposeHandler", onComposeHandler);

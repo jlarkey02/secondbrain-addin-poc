@@ -6,44 +6,36 @@
   xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
   xsi:type="MailApp">
 
-  <!-- Basic add-in metadata -->
   <Id>a1b2c3d4-e5f6-7890-abcd-ef1234567890</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.0.0.1</Version>
   <ProviderName>SecondBrain</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="SecondBrain Draft POC"/>
   <Description DefaultValue="POC: Test body.setAsync() draft injection on Reply"/>
 
-  <!-- Icon URLs — replace YOUR-HOSTING-URL with your actual hosted URL -->
   <IconUrl DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/icon-64.png"/>
   <HighResolutionIconUrl DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/icon-128.png"/>
 
-  <!-- Domains the add-in can communicate with -->
   <AppDomains>
-    <AppDomain>https://jlarkey02.github.io/secondbrain-addin-poc</AppDomain>
+    <AppDomain>https://jlarkey02.github.io</AppDomain>
   </AppDomains>
 
-  <!-- Supported Outlook hosts -->
   <Hosts>
     <Host Name="Mailbox"/>
   </Hosts>
 
-  <!-- Minimum Office.js requirement set for event-based activation -->
   <Requirements>
     <Sets>
       <Set Name="Mailbox" MinVersion="1.10"/>
     </Sets>
   </Requirements>
 
-  <!-- Permissions: ReadWriteItem needed for body.setAsync() -->
   <Permissions>ReadWriteItem</Permissions>
 
-  <!-- The background page that loads our JS -->
   <Rule xsi:type="RuleCollection" Mode="Or">
     <Rule xsi:type="ItemIs" ItemType="Message" FormType="Edit"/>
   </Rule>
 
-  <!-- Version overrides: event-based activation -->
   <VersionOverrides
     xmlns="http://schemas.microsoft.com/office/mailappversionoverrides"
     xsi:type="VersionOverridesV1_0">
@@ -52,7 +44,6 @@
       xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1"
       xsi:type="VersionOverridesV1_1">
 
-      <!-- Minimum requirement set for LaunchEvent -->
       <Requirements>
         <bt:Sets DefaultMinVersion="1.10">
           <bt:Set Name="Mailbox"/>
@@ -62,19 +53,27 @@
       <Hosts>
         <Host xsi:type="MailHost">
 
-          <!-- Desktop form factor -->
-          <DesktopFormFactor>
+          <!-- Runtimes: REQUIRED for event-based activation -->
+          <!-- HTML file for Outlook Web/Mac/New Outlook -->
+          <!-- JavaScript override for Classic Outlook on Windows -->
+          <Runtimes>
+            <Runtime resid="WebViewRuntime.Url">
+              <Override type="javascript" resid="JSRuntime.Url"/>
+            </Runtime>
+          </Runtimes>
 
-            <!-- The JS file that contains our event handler -->
+          <DesktopFormFactor>
             <FunctionFile resid="Commands.Url"/>
 
-            <!-- Event-based activation: fires on compose window open -->
+            <!-- Event-based activation -->
             <ExtensionPoint xsi:type="LaunchEvent">
               <LaunchEvents>
                 <LaunchEvent
                   Type="OnNewMessageCompose"
                   FunctionName="onComposeHandler"/>
               </LaunchEvents>
+              <!-- Must match the Runtime resid for web/mac -->
+              <SourceLocation resid="WebViewRuntime.Url"/>
             </ExtensionPoint>
 
           </DesktopFormFactor>
@@ -82,11 +81,14 @@
         </Host>
       </Hosts>
 
-      <!-- Resource URLs -->
       <Resources>
         <bt:Urls>
           <bt:Url id="Commands.Url"
                   DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/commands.html"/>
+          <bt:Url id="WebViewRuntime.Url"
+                  DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/commands.html"/>
+          <bt:Url id="JSRuntime.Url"
+                  DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/addin.js"/>
         </bt:Urls>
       </Resources>
 
