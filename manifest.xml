@@ -3,18 +3,20 @@
   xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
-  xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
   xsi:type="MailApp">
 
+  <!-- Required elements in schema order -->
   <Id>a1b2c3d4-e5f6-7890-abcd-ef1234567890</Id>
-  <Version>1.0.0.1</Version>
+  <Version>1.0.0.3</Version>
   <ProviderName>SecondBrain</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="SecondBrain Draft POC"/>
   <Description DefaultValue="POC: Test body.setAsync() draft injection on Reply"/>
 
+  <!-- Optional elements - must be in this order per schema -->
   <IconUrl DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/icon-64.png"/>
   <HighResolutionIconUrl DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/icon-128.png"/>
+  <SupportUrl DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/"/>
 
   <AppDomains>
     <AppDomain>https://jlarkey02.github.io</AppDomain>
@@ -30,12 +32,21 @@
     </Sets>
   </Requirements>
 
+  <FormSettings>
+    <Form xsi:type="ItemEdit">
+      <DesktopSettings>
+        <SourceLocation DefaultValue="https://jlarkey02.github.io/secondbrain-addin-poc/commands.html"/>
+      </DesktopSettings>
+    </Form>
+  </FormSettings>
+
   <Permissions>ReadWriteItem</Permissions>
 
   <Rule xsi:type="RuleCollection" Mode="Or">
     <Rule xsi:type="ItemIs" ItemType="Message" FormType="Edit"/>
   </Rule>
 
+  <!-- Version overrides for event-based activation -->
   <VersionOverrides
     xmlns="http://schemas.microsoft.com/office/mailappversionoverrides"
     xsi:type="VersionOverridesV1_0">
@@ -53,9 +64,6 @@
       <Hosts>
         <Host xsi:type="MailHost">
 
-          <!-- Runtimes: REQUIRED for event-based activation -->
-          <!-- HTML file for Outlook Web/Mac/New Outlook -->
-          <!-- JavaScript override for Classic Outlook on Windows -->
           <Runtimes>
             <Runtime resid="WebViewRuntime.Url">
               <Override type="javascript" resid="JSRuntime.Url"/>
@@ -65,14 +73,12 @@
           <DesktopFormFactor>
             <FunctionFile resid="Commands.Url"/>
 
-            <!-- Event-based activation -->
             <ExtensionPoint xsi:type="LaunchEvent">
               <LaunchEvents>
                 <LaunchEvent
                   Type="OnNewMessageCompose"
                   FunctionName="onComposeHandler"/>
               </LaunchEvents>
-              <!-- Must match the Runtime resid for web/mac -->
               <SourceLocation resid="WebViewRuntime.Url"/>
             </ExtensionPoint>
 
